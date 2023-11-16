@@ -1,32 +1,40 @@
-import React from 'react';
-import './App.css';
-import 'bootstrap/dist/css/bootstrap-grid.min.css'
-import LoginForm from "./components/LoginForm";
+import { CssBaseline } from '@mui/material';
+import { Route, Routes } from 'react-router-dom';
+import Layout from './components/layout';
+import Profile from './pages/Profile';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Unauthorize from './pages/Unauthorize';
+import RequireUser from './components/requireUser';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import EmailVerificationPage from './pages/VerifyEmail';
 
-const App: React.FC = () => {
+function App() {
   return (
-  <LoginForm></LoginForm>
-  )
+      <>
+        <CssBaseline />
+        <ToastContainer />
+        <Routes>
+          <Route path='/' element={<Layout />}>
+            {/*<Route index element={<Profile />} />*/}
+            <Route index element={<Home />} />
+
+            {/* Private Route */}
+            <Route element={<RequireUser allowedRoles={['user']} />}>
+              <Route path='profile' element={<Profile />} />
+            </Route>
+            <Route path='unauthorized' element={<Unauthorize />} />
+          </Route>
+          <Route path='verifyemail' element={<EmailVerificationPage />}>
+            <Route path=':verificationCode' element={<EmailVerificationPage />} />
+          </Route>
+          <Route path='login' element={<Login />} />
+          <Route path='register' element={<Register />} />
+        </Routes>
+      </>
+  );
 }
-// function App() {
-//   return (
-//     <div className="App">
-//       {/*<header className="App-header">*/}
-//       {/*  <img src={logo} className="App-logo" alt="logo" />*/}
-//       {/*  <p>*/}
-//       {/*    Edit <code>src/App.tsx</code> and save to reload.*/}
-//       {/*  </p>*/}
-//       {/*  <a*/}
-//       {/*    className="App-link"*/}
-//       {/*    href="https://reactjs.org"*/}
-//       {/*    target="_blank"*/}
-//       {/*    rel="noopener noreferrer"*/}
-//       {/*  >*/}
-//       {/*    Learn React*/}
-//       {/*  </a>*/}
-//       {/*</header>*/}
-//     </div>
-//   );
-// }
 
 export default App;
