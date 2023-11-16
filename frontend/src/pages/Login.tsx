@@ -149,7 +149,7 @@ const Login = () => {
                             borderRadius: 2,
                         }}
                     >
-                        <FormInput name='email' label='Email Address' type='email' />
+                        <FormInput name='email' label='User Name' type='email' />
                         <FormInput name='password' label='Password' type='password' />
 
                         <Typography sx={{ fontSize: '0.9rem', mb: '1rem' }}>

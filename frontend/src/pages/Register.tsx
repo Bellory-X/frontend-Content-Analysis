@@ -149,7 +149,7 @@ const Register = () => {
                             borderRadius: 2,
                         }}
                     >
-                        <FormInput name='name' label='Full Name' />
+                        <FormInput name='name' label='User Name' />
                         <FormInput name='email' label='Email Address' type='email' />
                         <FormInput name='password' label='Password' type='password' />
                         <FormInput
