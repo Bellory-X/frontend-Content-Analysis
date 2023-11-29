@@ -11,12 +11,12 @@ const Loadable = (Component: React.ComponentType<any>) => (props: JSX.IntrinsicA
             </Suspense>
         );
 
-const LoginPage = Loadable(lazy(() => import('../pages/Login')));
-const RegisterPage = Loadable(lazy(() => import('../pages/Register')));
+const LoginPage = Loadable(lazy(() => import('../pages/login/Login')));
+const RegisterPage = Loadable(lazy(() => import('../pages/register/Register')));
 const HomePage = Loadable(lazy(() => import('../pages/Home')));
 const ProfilePage = Loadable(lazy(() => import('../pages/Profile')));
 const UnauthorizePage = Loadable(lazy(() => import('../pages/Unauthorize')));
-const EmailVerificationPage = Loadable(lazy(() => import('../pages/VerifyEmail')));
+const EmailVerificationPage = Loadable(lazy(() => import('../pages/VerifyEmailPage')));
 
 const authRoutes: RouteObject = {
     path: '*',

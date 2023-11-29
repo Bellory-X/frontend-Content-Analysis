@@ -1,29 +1,25 @@
 import React from 'react';
-import {Controller, useFormContext} from "react-hook-form";
-import {FormControl, FormHelperText,  Input as _Input, Typography} from "@mui/material";
 import {styled} from "@mui/material/styles";
+import {FormControl, FormHelperText, Input as _Input, Typography} from "@mui/material";
+import {Controller, useFormContext} from "react-hook-form";
 
 const Input = styled(_Input)`
   background-color: white;
   padding: 0.4rem 0.7rem;
 `;
 
-
-
-const PasswordInput = () => {
+const InputRecoveryCodePage = () => {
 
     const { control, formState: {errors} } = useFormContext()
 
     return (
         <div>
             <Controller
-                name="password"
+                name="recoveryCode"
                 control={control}
                 defaultValue=""
                 rules={{
                     required: true,
-                    maxLength: 20,
-
                 }}
                 render={({ field }) => (
                     <FormControl fullWidth sx={{ mb: 2 }}>
@@ -31,17 +27,17 @@ const PasswordInput = () => {
                             variant='body2'
                             sx={{ color: '#2363eb', mb: 1, fontWeight: 500 }}
                         >
-                            Password
+                            Recovery Code
                         </Typography>
                         <Input
                             {...field}
                             fullWidth
                             disableUnderline
                             sx={{ borderRadius: '1rem' }}
-                            type="password"
                         />
                         <FormHelperText >
-                            {errors?.password?.type === "required" && <p>This field is required</p>}
+                            {errors?.email?.type === "required" && "This field is require"}
+
                         </FormHelperText>
                     </FormControl>
                 )}
@@ -50,4 +46,4 @@ const PasswordInput = () => {
     );
 };
 
-export default PasswordInput;
+export default InputRecoveryCodePage;

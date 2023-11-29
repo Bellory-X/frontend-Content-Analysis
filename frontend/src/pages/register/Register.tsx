@@ -1,14 +1,17 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { object, string, TypeOf } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import FormInput from '../components/FormInput';
+import FormInput from '../../components/FormInput';
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useRegisterUserMutation } from '../redux/api/authApi';
+import { useNavigate } from 'react-router-dom';
+import { useRegisterUserMutation } from '../../redux/api/authApi';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
+import LoginTypograhy from "./LoginTypograhy";
+import WelcomeToContentAnalysisTypography from "./typography/WelcomeToContentAnalysisTypography";
+import SignUpToGetStartedTypography from "./typography/SignUpToGetStartedTypography";
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.6rem 0;
@@ -22,16 +25,9 @@ const LoadingButton = styled(_LoadingButton)`
   }
 `;
 
-const LinkItem = styled(Link)`
-  text-decoration: none;
-  color: #2363eb;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
 
 const registerSchema = object({
-    name: string().min(1, 'Full name is required').max(100),
+    login: string().min(1, 'Full name is required').max(100),
     email: string()
         .min(1, 'Email address is required')
         .email('Email Address is invalid'),
@@ -39,15 +35,23 @@ const registerSchema = object({
         .min(1, 'Password is required')
         .min(8, 'Password must be more than 8 characters')
         .max(32, 'Password must be less than 32 characters'),
-    passwordConfirm: string().min(1, 'Please confirm your password'),
-}).refine((data) => data.password === data.passwordConfirm, {
+    password_confirmation: string().min(1, 'Please confirm your password'),
+}).refine((data) => data.password === data.password_confirmation, {
     path: ['passwordConfirm'],
     message: 'Passwords do not match',
 });
 
+type Inputs = {
+    login: string
+    email: string
+    password: string
+    password_confirmation: string
+}
+
 export type RegisterInput = TypeOf<typeof registerSchema>;
 
 const Register = () => {
+
     const methods = useForm<RegisterInput>({
         resolver: zodResolver(registerSchema),
     });
@@ -63,6 +67,19 @@ const Register = () => {
         handleSubmit,
         formState: { isSubmitSuccessful },
     } = methods;
+
+    /*const {
+        reset,
+        handleSubmit,
+        formState: { isSubmitSuccessful },
+    } = useForm({
+        defaultValues: {
+            login: "",
+            email: "",
+            password: "",
+            password_confirmation: ""
+        }
+    });*/
 
     useEffect(() => {
         if (isSuccess) {
@@ -96,6 +113,10 @@ const Register = () => {
 
     const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {
         // 👇 Executing the RegisterUser Mutation
+        console.log("login = ", values?.login)
+        console.log("email = ", values?.email)
+        console.log("password = ", values?.password)
+        console.log("passwordConfirm = ", values?.password_confirmation)
         registerUser(values);
     };
 
@@ -118,22 +139,9 @@ const Register = () => {
                     flexDirection: 'column',
                 }}
             >
-                <Typography
-                    textAlign='center'
-                    component='h1'
-                    sx={{
-                        color: '#f9d13e',
-                        fontSize: { xs: '2rem', md: '3rem' },
-                        fontWeight: 600,
-                        mb: 2,
-                        letterSpacing: 1,
-                    }}
-                >
-                    Welcome to Content Analysis!
-                </Typography>
-                <Typography component='h2' sx={{ color: '#e5e7eb', mb: 2 }}>
-                    Sign Up To Get Started!
-                </Typography>
+
+                <WelcomeToContentAnalysisTypography /> {/* Надпись: "Welcome to Content Analysis!"*/}
+                <SignUpToGetStartedTypography /> {/* Надпись: "Sign Up To Get Started!"*/}
 
                 <FormProvider {...methods}>
                     <Box
@@ -149,18 +157,16 @@ const Register = () => {
                             borderRadius: 2,
                         }}
                     >
-                        <FormInput name='name' label='User Name' />
+                        <FormInput name='login' label='User Name' />
                         <FormInput name='email' label='Email Address' type='email' />
                         <FormInput name='password' label='Password' type='password' />
                         <FormInput
-                            name='passwordConfirm'
+                            name='password_confirmation'
                             label='Confirm Password'
                             type='password'
                         />
-                        <Typography sx={{ fontSize: '0.9rem', mb: '1rem' }}>
-                            Already have an account?{' '}
-                            <LinkItem to='/login'>Login Here</LinkItem>
-                        </Typography>
+
+                        <LoginTypograhy />  {/*кнопка с переходом на страничку логина*/}
 
                         <LoadingButton
                             variant='contained'
@@ -169,6 +175,7 @@ const Register = () => {
                             disableElevation
                             type='submit'
                             loading={isLoading}
+                            onClick={handleSubmit(onSubmitHandler)}
                         >
                             Sign Up
                         </LoadingButton>

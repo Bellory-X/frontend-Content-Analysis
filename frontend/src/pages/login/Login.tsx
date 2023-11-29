@@ -1,17 +1,17 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { object, string, TypeOf } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import FormInput from '../../components/FormInput';
-import { useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 import { useLoginUserMutation } from '../../redux/api/authApi';
 import WelcomeBackTypography from "./typography/WelcomeBackTypography";
 import LoginToHaveAccessTypography from "./typography/LoginToHaveAccessTypography";
 import SignUpTypography from "./typography/SignUpTypography";
+import RecoveryButton from "../register/typography/RecoveryButton";
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.6rem 0;
@@ -40,19 +40,14 @@ export type LoginInput = TypeOf<typeof loginSchema>;
 
 const Login = () => {
 
-    const methods = useForm<LoginInput>({
-        resolver: zodResolver(loginSchema),
-    });
-
-    // 👇 API Login Mutation
     const [loginUser, { isLoading, isError, error, isSuccess }] =
         useLoginUserMutation();
 
     const navigate = useNavigate();
     const location = useLocation();
-
     const from = ((location.state as any)?.from.pathname as string) || '/profile';
 
+    const methods = useForm<LoginInput>();
     const {
         reset,
         handleSubmit,
@@ -65,14 +60,16 @@ const Login = () => {
             navigate(from);
         }
         if (isError) {
-            if (Array.isArray((error as any).data.error)) {
-                (error as any).data.error.forEach((el: any) =>
+
+            toast.error("Ошибка входа")
+            if (Array.isArray((error as any))) {
+                (error as any).data.forEach((el: any) =>
                     toast.error(el.message, {
                         position: 'top-right',
                     })
                 );
             } else {
-                toast.error((error as any).data.message, {
+                toast.error((error as any).data, {
                     position: 'top-right',
                 });
             }
@@ -88,7 +85,6 @@ const Login = () => {
     }, [isSubmitSuccessful]);
 
     const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
-        // 👇 Executing the loginUser Mutation
         loginUser(values);
     };
 
@@ -132,6 +128,7 @@ const Login = () => {
                         <FormInput name='password' label='Password' type='password' />
 
                         <SignUpTypography />
+                        <RecoveryButton />  {/*кнопка с переходом на страничку восстановления пароля по почте*/}
 
                         <LoadingButton
                             variant='contained'

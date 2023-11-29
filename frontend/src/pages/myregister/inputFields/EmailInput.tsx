@@ -1,6 +1,5 @@
 import React from 'react';
-import {Controller, FieldErrors, Path, useFormContext, UseFormRegister} from "react-hook-form";
-import {IFormInput} from "../RegisterPage";
+import {Controller,  useFormContext} from "react-hook-form";
 import {FormControl, FormHelperText,  Input as _Input, Typography} from "@mui/material";
 import {styled} from "@mui/material/styles";
 
@@ -24,7 +23,7 @@ const EmailInput = () => {
                     required: true,
                     maxLength: 20,
                     minLength: 5,
-                    pattern: /^[A-Za-z]+$/i
+                    // pattern: /^[A-Za-z]+$/i
                 }}
                 render={({ field }) => (
                     <FormControl fullWidth sx={{ mb: 2 }}>
@@ -49,9 +48,7 @@ const EmailInput = () => {
                             {errors?.email?.type === "minLength" && (
                                 "Email must be longer than 5 characters"
                             )}
-                            {errors?.email?.type === "pattern" && (
-                                "Alphabetical characters only"
-                            )}
+
                         </FormHelperText>
                     </FormControl>
                 )}

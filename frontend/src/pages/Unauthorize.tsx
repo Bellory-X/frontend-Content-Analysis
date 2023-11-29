@@ -1,5 +1,6 @@
 import { Box, Container, Typography } from '@mui/material';
 
+// сюда перенаправлять, если у пользователя нет доступа к запрашиваемому ресурсу.
 const Unauthorize = () => {
     return (
         <Container maxWidth='lg'>

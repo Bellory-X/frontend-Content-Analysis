@@ -1,14 +1,14 @@
-import { Box, Container, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import { object, string, TypeOf } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import {Box, Container, Typography} from '@mui/material';
+import {styled} from '@mui/material/styles';
+import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {object, string, TypeOf} from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
 import FormInput from '../components/FormInput';
-import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { LoadingButton as _LoadingButton } from '@mui/lab';
-import { toast } from 'react-toastify';
-import { useVerifyEmailMutation } from '../redux/api/authApi';
+import {useEffect} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {LoadingButton as _LoadingButton} from '@mui/lab';
+import {toast} from 'react-toastify';
+import {useVerifyEmailMutation} from '../redux/api/authApi';
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.6rem 0;
@@ -29,14 +29,13 @@ const verificationCodeSchema = object({
 export type VerificationCodeInput = TypeOf<typeof verificationCodeSchema>;
 
 const EmailVerificationPage = () => {
-    const { verificationCode } = useParams();
+    const {verificationCode} = useParams();
 
     const methods = useForm<VerificationCodeInput>({
         resolver: zodResolver(verificationCodeSchema),
     });
 
-    // 👇 API Login Mutation
-    const [verifyEmail, { isLoading, isSuccess, data, isError, error }] =
+    const [verifyEmail, {isLoading, isSuccess, data, isError, error}] =
         useVerifyEmailMutation();
 
     const navigate = useNavigate();
@@ -44,12 +43,12 @@ const EmailVerificationPage = () => {
     const {
         reset,
         handleSubmit,
-        formState: { isSubmitSuccessful },
+        formState: {isSubmitSuccessful},
     } = methods;
 
     useEffect(() => {
         if (verificationCode) {
-            reset({ verificationCode });
+            reset({verificationCode});
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -82,11 +81,8 @@ const EmailVerificationPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSubmitSuccessful]);
 
-    const onSubmitHandler: SubmitHandler<VerificationCodeInput> = ({
-                                                                       verificationCode,
-                                                                   }) => {
-        // 👇 Executing the verifyEmail Mutation
-        verifyEmail({ verificationCode });
+    const onSubmitHandler: SubmitHandler<VerificationCodeInput> = ({verificationCode}) => {
+        verifyEmail({verificationCode});
     };
 
     return (
@@ -114,7 +110,7 @@ const EmailVerificationPage = () => {
                     sx={{
                         color: '#f9d13e',
                         fontWeight: 600,
-                        fontSize: { xs: '2rem', md: '3rem' },
+                        fontSize: {xs: '2rem', md: '3rem'},
                         mb: 2,
                         letterSpacing: 1,
                     }}
@@ -132,15 +128,15 @@ const EmailVerificationPage = () => {
                         width='100%'
                         sx={{
                             backgroundColor: '#e5e7eb',
-                            p: { xs: '1rem', sm: '2rem' },
+                            p: {xs: '1rem', sm: '2rem'},
                             borderRadius: 2,
                         }}
                     >
-                        <FormInput name='verificationCode' label='Verification Code' />
+                        <FormInput name='verificationCode' label='Verification Code'/>
 
                         <LoadingButton
                             variant='contained'
-                            sx={{ mt: 1 }}
+                            sx={{mt: 1}}
                             fullWidth
                             disableElevation
                             type='submit'

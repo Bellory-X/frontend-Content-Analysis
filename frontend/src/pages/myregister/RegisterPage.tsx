@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Path, SubmitHandler, useForm, UseFormRegister, Controller, FormProvider} from "react-hook-form";
+import {SubmitHandler, useForm, FormProvider} from "react-hook-form";
 import {useRegisterUserMutation} from "../../redux/api/authApi";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
@@ -11,8 +11,8 @@ import {Box, Container} from "@mui/material";
 import {LoadingButton} from '@mui/lab';
 import WelcomeToContentAnalysisTypography from "../register/typography/WelcomeToContentAnalysisTypography";
 import SignUpToGetStartedTypography from "../register/typography/SignUpToGetStartedTypography";
-import FormInput from "../../components/FormInput";
 import LoginTypograhy from "../register/LoginTypograhy";
+import RecoveryButton from "../register/typography/RecoveryButton";
 
 export interface IFormInput {
     login: string
@@ -55,6 +55,7 @@ const RegisterPage = () => {
         if (isError) {
             console.log(error);
 
+            toast.error("smth went wrong...")
             // это всплывающее окно с ошибками, которое неправильно работает.
             if (Array.isArray((error as any))) {
                 (error as any).forEach((el: any) =>
@@ -99,7 +100,6 @@ const RegisterPage = () => {
                 <Box
                     component='form'
                     onSubmit={handleSubmit(onSubmit)}
-                    // noValidate
                     autoComplete='off'
                     maxWidth='27rem'
                     width='100%'
@@ -109,13 +109,14 @@ const RegisterPage = () => {
                         borderRadius: 2,
                     }}
                 >
+
                     <LoginInput />
                     <EmailInput />
-                    <PasswordInput label="password" register={register} errors={errors} />
-                    <PasswordConfirmationInput label="password_confirmation" register={register} errors={errors} />
-
+                    <PasswordInput />
+                    <PasswordConfirmationInput />
 
                     <LoginTypograhy />  {/*кнопка с переходом на страничку логина*/}
+                    <RecoveryButton />  {/*кнопка с переходом на страничку восстановления пароля по почте*/}
 
                     <LoadingButton
                         variant='contained'
@@ -124,7 +125,6 @@ const RegisterPage = () => {
                         disableElevation
                         type='submit'
                         loading={isLoading}
-                        // onClick={handleSubmit(onSubmitHandler)}
                     >
                         Sign Up
                     </LoadingButton>

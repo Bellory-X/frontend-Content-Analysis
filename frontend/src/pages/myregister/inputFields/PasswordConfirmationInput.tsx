@@ -1,25 +1,50 @@
 import React from 'react';
-import {FieldErrors, Path, UseFormRegister} from "react-hook-form";
-import {IFormInput} from "../RegisterPage";
+import {Controller, useFormContext} from "react-hook-form";
+import {styled} from "@mui/material/styles";
+import {FormControl, FormHelperText, Input as _Input, Typography} from "@mui/material";
 
-type PasswordConfirmationProps = {
-    label: Path<IFormInput>;
-    register: UseFormRegister<IFormInput>;
-    errors: FieldErrors<IFormInput>
-};
+const Input = styled(_Input)`
+  background-color: white;
+  padding: 0.4rem 0.7rem;
+`;
 
-const PasswordConfirmationInput = ({ label, register, errors }: PasswordConfirmationProps) => {
+
+const PasswordConfirmationInput = () => {
+
+    const { control, formState: {errors} } = useFormContext()
+
     return (
         <div>
-            <label>{label}</label>
-            <input {...register(label, {
-                required: true,
-                pattern: /^[A-Za-z]+$/i
-            })} />
-            {errors?.password_confirmation?.type === "required" && <p>This field is required</p>}
-            {errors?.password_confirmation?.type === "pattern" && (
-                <p>Alphabetical characters only</p>
-            )}
+
+            <Controller
+                name="password_confirmation"
+                control={control}
+                defaultValue=""
+                rules={{
+                    required: true,
+                    maxLength: 20
+                }}
+                render={({ field }) => (
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                        <Typography
+                            variant='body2'
+                            sx={{ color: '#2363eb', mb: 1, fontWeight: 500 }}
+                        >
+                            Password
+                        </Typography>
+                        <Input
+                            {...field}
+                            fullWidth
+                            disableUnderline
+                            sx={{ borderRadius: '1rem' }}
+                            type="password"
+                        />
+                        <FormHelperText >
+                            {errors?.password_confirmation?.type === "required" && "This field is required"}
+                        </FormHelperText>
+                    </FormControl>
+                )}
+            />
         </div>
     );
 };
