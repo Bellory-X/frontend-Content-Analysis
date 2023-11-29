@@ -1,14 +1,14 @@
-import { Box, Container, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import { object, string, TypeOf } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import {Box, Container, Typography} from '@mui/material';
+import {styled} from '@mui/material/styles';
+import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {object, string, TypeOf} from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
 import FormInput from '../components/FormInput';
-import { useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LoadingButton as _LoadingButton } from '@mui/lab';
-import { toast } from 'react-toastify';
-import { useLoginUserMutation } from '../redux/api/authApi';
+import {useEffect} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {LoadingButton as _LoadingButton} from '@mui/lab';
+import {toast} from 'react-toastify';
+import {useVerifyEmailMutation} from '../redux/api/authApi';
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.6rem 0;
@@ -22,50 +22,41 @@ const LoadingButton = styled(_LoadingButton)`
   }
 `;
 
-const LinkItem = styled(Link)`
-  text-decoration: none;
-  color: #2363eb;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const loginSchema = object({
-    email: string()
-        .min(1, 'Email address is required')
-        .email('Email Address is invalid'),
-    password: string()
-        .min(1, 'Password is required')
-        .min(8, 'Password must be more than 8 characters')
-        .max(32, 'Password must be less than 32 characters'),
+const verificationCodeSchema = object({
+    verificationCode: string().min(1, 'Verification code is required'),
 });
 
-export type LoginInput = TypeOf<typeof loginSchema>;
+export type VerificationCodeInput = TypeOf<typeof verificationCodeSchema>;
 
-const Login = () => {
-    const methods = useForm<LoginInput>({
-        resolver: zodResolver(loginSchema),
+const EmailVerificationPage = () => {
+    const {verificationCode} = useParams();
+
+    const methods = useForm<VerificationCodeInput>({
+        resolver: zodResolver(verificationCodeSchema),
     });
 
-    // 👇 API Login Mutation
-    const [loginUser, { isLoading, isError, error, isSuccess }] =
-        useLoginUserMutation();
+    const [verifyEmail, {isLoading, isSuccess, data, isError, error}] =
+        useVerifyEmailMutation();
 
     const navigate = useNavigate();
-    const location = useLocation();
-
-    const from = ((location.state as any)?.from.pathname as string) || '/profile';
 
     const {
         reset,
         handleSubmit,
-        formState: { isSubmitSuccessful },
+        formState: {isSubmitSuccessful},
     } = methods;
 
     useEffect(() => {
+        if (verificationCode) {
+            reset({verificationCode});
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
         if (isSuccess) {
-            toast.success('You successfully logged in');
-            navigate(from);
+            toast.success(data?.message);
+            navigate('/login');
         }
         if (isError) {
             if (Array.isArray((error as any).data.error)) {
@@ -90,9 +81,8 @@ const Login = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSubmitSuccessful]);
 
-    const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
-        // 👇 Executing the loginUser Mutation
-        loginUser(values);
+    const onSubmitHandler: SubmitHandler<VerificationCodeInput> = ({verificationCode}) => {
+        verifyEmail({verificationCode});
     };
 
     return (
@@ -102,7 +92,7 @@ const Login = () => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '100vh',
+                minHeight: '100vh',
                 backgroundColor: 'rgb(58,58,77)',
             }}
         >
@@ -120,19 +110,12 @@ const Login = () => {
                     sx={{
                         color: '#f9d13e',
                         fontWeight: 600,
-                        fontSize: { xs: '2rem', md: '3rem' },
+                        fontSize: {xs: '2rem', md: '3rem'},
                         mb: 2,
                         letterSpacing: 1,
                     }}
                 >
-                    Welcome Back!
-                </Typography>
-                <Typography
-                    variant='body1'
-                    component='h2'
-                    sx={{ color: '#e5e7eb', mb: 2 }}
-                >
-                    Login to have access
+                    Verify Email Address
                 </Typography>
 
                 <FormProvider {...methods}>
@@ -145,26 +128,21 @@ const Login = () => {
                         width='100%'
                         sx={{
                             backgroundColor: '#e5e7eb',
-                            p: { xs: '1rem', sm: '2rem' },
+                            p: {xs: '1rem', sm: '2rem'},
                             borderRadius: 2,
                         }}
                     >
-                        <FormInput name='email' label='User Name' type='email' />
-                        <FormInput name='password' label='Password' type='password' />
-
-                        <Typography sx={{ fontSize: '0.9rem', mb: '1rem' }}>
-                            Need an account? <LinkItem to='/register'>Sign Up Here</LinkItem>
-                        </Typography>
+                        <FormInput name='verificationCode' label='Verification Code'/>
 
                         <LoadingButton
                             variant='contained'
-                            sx={{ mt: 1 }}
+                            sx={{mt: 1}}
                             fullWidth
                             disableElevation
                             type='submit'
                             loading={isLoading}
                         >
-                            Login
+                            Verify Email
                         </LoadingButton>
                     </Box>
                 </FormProvider>
@@ -173,4 +151,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default EmailVerificationPage;

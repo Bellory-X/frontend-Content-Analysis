@@ -1,14 +1,17 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { object, string, TypeOf } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import FormInput from '../components/FormInput';
-import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useRegisterUserMutation } from '../redux/api/authApi';
+import FormInput from '../../components/FormInput';
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
+import { useLoginUserMutation } from '../../redux/api/authApi';
+import WelcomeBackTypography from "./typography/WelcomeBackTypography";
+import LoginToHaveAccessTypography from "./typography/LoginToHaveAccessTypography";
+import SignUpTypography from "./typography/SignUpTypography";
+import RecoveryButton from "../register/typography/RecoveryButton";
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.6rem 0;
@@ -22,16 +25,8 @@ const LoadingButton = styled(_LoadingButton)`
   }
 `;
 
-const LinkItem = styled(Link)`
-  text-decoration: none;
-  color: #2363eb;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
 
-const registerSchema = object({
-    name: string().min(1, 'Full name is required').max(100),
+const loginSchema = object({
     email: string()
         .min(1, 'Email address is required')
         .email('Email Address is invalid'),
@@ -39,25 +34,20 @@ const registerSchema = object({
         .min(1, 'Password is required')
         .min(8, 'Password must be more than 8 characters')
         .max(32, 'Password must be less than 32 characters'),
-    passwordConfirm: string().min(1, 'Please confirm your password'),
-}).refine((data) => data.password === data.passwordConfirm, {
-    path: ['passwordConfirm'],
-    message: 'Passwords do not match',
 });
 
-export type RegisterInput = TypeOf<typeof registerSchema>;
+export type LoginInput = TypeOf<typeof loginSchema>;
 
-const Register = () => {
-    const methods = useForm<RegisterInput>({
-        resolver: zodResolver(registerSchema),
-    });
+const Login = () => {
 
-    // 👇 Calling the Register Mutation
-    const [registerUser, { isLoading, isSuccess, error, isError }] =
-        useRegisterUserMutation();
+    const [loginUser, { isLoading, isError, error, isSuccess }] =
+        useLoginUserMutation();
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = ((location.state as any)?.from.pathname as string) || '/profile';
 
+    const methods = useForm<LoginInput>();
     const {
         reset,
         handleSubmit,
@@ -66,20 +56,20 @@ const Register = () => {
 
     useEffect(() => {
         if (isSuccess) {
-            toast.success('User registered successfully');
-            navigate('/verifyemail');
+            toast.success('You successfully logged in');
+            navigate(from);
         }
-
         if (isError) {
-            console.log(error);
-            if (Array.isArray((error as any).data.error)) {
-                (error as any).data.error.forEach((el: any) =>
+
+            toast.error("Ошибка входа")
+            if (Array.isArray((error as any))) {
+                (error as any).data.forEach((el: any) =>
                     toast.error(el.message, {
                         position: 'top-right',
                     })
                 );
             } else {
-                toast.error((error as any).data.message, {
+                toast.error((error as any).data, {
                     position: 'top-right',
                 });
             }
@@ -94,9 +84,8 @@ const Register = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSubmitSuccessful]);
 
-    const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {
-        // 👇 Executing the RegisterUser Mutation
-        registerUser(values);
+    const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
+        loginUser(values);
     };
 
     return (
@@ -118,22 +107,8 @@ const Register = () => {
                     flexDirection: 'column',
                 }}
             >
-                <Typography
-                    textAlign='center'
-                    component='h1'
-                    sx={{
-                        color: '#f9d13e',
-                        fontSize: { xs: '2rem', md: '3rem' },
-                        fontWeight: 600,
-                        mb: 2,
-                        letterSpacing: 1,
-                    }}
-                >
-                    Welcome to Content Analysis!
-                </Typography>
-                <Typography component='h2' sx={{ color: '#e5e7eb', mb: 2 }}>
-                    Sign Up To Get Started!
-                </Typography>
+                <WelcomeBackTypography />
+                <LoginToHaveAccessTypography />
 
                 <FormProvider {...methods}>
                     <Box
@@ -149,18 +124,11 @@ const Register = () => {
                             borderRadius: 2,
                         }}
                     >
-                        <FormInput name='name' label='User Name' />
-                        <FormInput name='email' label='Email Address' type='email' />
+                        <FormInput name='email' label='User Name' type='email' />
                         <FormInput name='password' label='Password' type='password' />
-                        <FormInput
-                            name='passwordConfirm'
-                            label='Confirm Password'
-                            type='password'
-                        />
-                        <Typography sx={{ fontSize: '0.9rem', mb: '1rem' }}>
-                            Already have an account?{' '}
-                            <LinkItem to='/login'>Login Here</LinkItem>
-                        </Typography>
+
+                        <SignUpTypography />
+                        <RecoveryButton />  {/*кнопка с переходом на страничку восстановления пароля по почте*/}
 
                         <LoadingButton
                             variant='contained'
@@ -170,7 +138,7 @@ const Register = () => {
                             type='submit'
                             loading={isLoading}
                         >
-                            Sign Up
+                            Login
                         </LoadingButton>
                     </Box>
                 </FormProvider>
@@ -179,4 +147,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default Login;
