@@ -3,12 +3,15 @@ import { styled } from '@mui/material/styles';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { object, string, TypeOf } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import FormInput from '../components/FormInput';
+import FormInput from '../../components/FormInput';
 import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
-import { useLoginUserMutation } from '../redux/api/authApi';
+import { useLoginUserMutation } from '../../redux/api/authApi';
+import WelcomeBackTypography from "./typography/WelcomeBackTypography";
+import LoginToHaveAccessTypography from "./typography/LoginToHaveAccessTypography";
+import SignUpTypography from "./typography/SignUpTypography";
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.6rem 0;
@@ -22,13 +25,6 @@ const LoadingButton = styled(_LoadingButton)`
   }
 `;
 
-const LinkItem = styled(Link)`
-  text-decoration: none;
-  color: #2363eb;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
 
 const loginSchema = object({
     email: string()
@@ -43,6 +39,7 @@ const loginSchema = object({
 export type LoginInput = TypeOf<typeof loginSchema>;
 
 const Login = () => {
+
     const methods = useForm<LoginInput>({
         resolver: zodResolver(loginSchema),
     });
@@ -114,26 +111,8 @@ const Login = () => {
                     flexDirection: 'column',
                 }}
             >
-                <Typography
-                    textAlign='center'
-                    component='h1'
-                    sx={{
-                        color: '#f9d13e',
-                        fontWeight: 600,
-                        fontSize: { xs: '2rem', md: '3rem' },
-                        mb: 2,
-                        letterSpacing: 1,
-                    }}
-                >
-                    Welcome Back!
-                </Typography>
-                <Typography
-                    variant='body1'
-                    component='h2'
-                    sx={{ color: '#e5e7eb', mb: 2 }}
-                >
-                    Login to have access
-                </Typography>
+                <WelcomeBackTypography />
+                <LoginToHaveAccessTypography />
 
                 <FormProvider {...methods}>
                     <Box
@@ -152,9 +131,7 @@ const Login = () => {
                         <FormInput name='email' label='User Name' type='email' />
                         <FormInput name='password' label='Password' type='password' />
 
-                        <Typography sx={{ fontSize: '0.9rem', mb: '1rem' }}>
-                            Need an account? <LinkItem to='/register'>Sign Up Here</LinkItem>
-                        </Typography>
+                        <SignUpTypography />
 
                         <LoadingButton
                             variant='contained'
